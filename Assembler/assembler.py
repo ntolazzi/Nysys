@@ -37,7 +37,7 @@ dest_binary_map = {
     "null": "000",
     "M": "001",
     "D": "010",
-    "DM": "011",
+    "MD": "011",
     "A": "100",
     "AM": "101",
     "AD": "110",
@@ -55,6 +55,33 @@ jump_binary_map = {
     "JMP": "111",
 }
 
+predefined_symbols = {
+    "R0": "0",
+    "R1": "1",
+    "R2": "2",
+    "R3": "3",
+    "R4": "4",
+    "R5": "5",
+    "R6": "6",
+    "R7": "7",
+    "R8": "8",
+    "R9": "9",
+    "R10": "10",
+    "R11": "11",
+    "R12": "12",
+    "R13": "13",
+    "R14": "14",
+    "R15": "15",
+    "SP": "0",
+    "LCL": "1",
+    "ARG": "2",
+    "THIS": "3",
+    "THAT": "4",
+    "SCREEN": "16384",
+    "KBD": "24576",
+
+}
+
 
 class InstType(Enum):
     A_Inst = 1
@@ -68,6 +95,9 @@ class CInstruction:
     comp: str
     jump: str
 
+    def __str__(self):
+        return f"dest={self.dest},comp={self.comp},jump={self.jump}"
+
 
 def load_file(filename: str) -> str:
     with open(filename) as fh:
@@ -75,14 +105,15 @@ def load_file(filename: str) -> str:
 
 
 def translate_c_instruction(inst: CInstruction) -> str:
+    print(inst)
     return f"111{comp_binary_map[inst.comp]}{dest_binary_map[inst.dest]}{jump_binary_map[inst.jump]}"
 
 
 def translate_a_instruction(constant: str) -> str:
     constant = int(constant)
-    if constant >= 2 ** 14 or constant <= -2 ** 14:
-        raise ValueError("Number outside of range [-16384,16383]")
-    two_complement = format(constant if constant >= 0 else (1 << 15) + constant, '015b')
+    if constant >= 2 ** 15:
+        raise ValueError("Number outside of range [0,32767]")
+    two_complement = format(constant, '015b')
     return f"0{two_complement}"
 
 
