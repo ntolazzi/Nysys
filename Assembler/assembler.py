@@ -1,5 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
+import sys
 
 comp_binary_map = {
     "0": "0101010",
@@ -165,10 +166,7 @@ class Parser:
                 self.current_inst = candidate
 
 
-if __name__ == '__main__':
-    filepath = "xxx"
-    content = load_file(filepath)
-    parser = Parser(content)
+def assemble(parser: Parser) -> str:
     translated_output = ""
     while parser.has_more_lines():
         parser.advance()
@@ -180,6 +178,25 @@ if __name__ == '__main__':
         else:
             raise NotImplementedError("Type not implemented")
         translated_output += f"{translated_inst}\n"
+    return translated_output[:-1]
 
+
+def write_file(filepath: str, content: str):
     with open(filepath.split(".")[0] + ".hack", "w") as fh:
-        fh.write(translated_output)
+        fh.write(content)
+
+
+def main():
+    try:
+        filepath = sys.argv[1]
+    except IndexError:
+        print("Error: Input file missing\nUsage: python assembler.py inputfile.asm")
+        sys.exit(1)
+    content = load_file(filepath)
+    parser = Parser(content)
+    assembled_content = assemble(parser)
+    write_file(filepath, assembled_content)
+
+
+if __name__ == '__main__':
+    main()
