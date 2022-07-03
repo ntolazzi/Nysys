@@ -172,10 +172,10 @@ if __name__ == '__main__':
     translated_output = ""
     while parser.has_more_lines():
         parser.advance()
-        type = parser.get_current_inst_type()
-        if type == InstType.C_Inst:
+        inst_type = parser.get_current_inst_type()
+        if inst_type == InstType.C_Inst:
             translated_inst = translate_c_instruction(parser.decode_current_c_inst())
-        elif type == InstType.A_Inst:
+        elif inst_type == InstType.A_Inst:
             translated_inst = translate_a_instruction(parser.get_current_inst_symbol())
         else:
             raise NotImplementedError("Type not implemented")
